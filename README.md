@@ -32,9 +32,79 @@ To write a program for mean, variance and cross correlation in SCILAB and verify
 
 
 ## PROGRAM
+```
+clc; clear; close;
+
+function p = pdf(t)
+    p = 3 .* (1 - t).^2;
+endfunction
+
+function y = integrand_mean(t)
+    y = t .* pdf(t);
+endfunction
+
+function y = integrand_x2(t)
+    y = t.^2 .* pdf(t);
+endfunction
+
+a = 0; b = 1;
+
+EX  = intg(a, b, integrand_mean);
+EX2 = intg(a, b, integrand_x2);
+vX  = EX2 - EX^2;
+
+EY  = intg(a, b, integrand_mean);
+EY2 = intg(a, b, integrand_x2);
+vY  = EY2 - EY^2;
+
+mprintf("Mean of X   = %g\n", EX);
+mprintf("Var(X)      = %g\n\n", vX);
+
+mprintf("Mean of Y   = %g\n", EY);
+mprintf("Var(Y)      = %g\n\n", vY);
+
+function r = crosscorr_seq(x, y)
+    nx = length(x);
+    ny = length(y);
+    lags = -(ny-1):(nx-1);
+    r = zeros(1, nx + ny - 1);
+    idx = 1;
+    for lag = lags
+        s = 0;
+        for n = 1:nx
+            m = n - lag;
+            if m >= 1 & m <= ny then
+                s = s + x(n) * y(m);
+            end
+        end
+        r(idx) = s;
+        idx = idx + 1;
+    end
+endfunction
+
+x = input("Enter reference sequence (e.g. [1 2 3 4]): ");
+y = input("Enter second sequence    (e.g. [2 3 4 5]): ");
+
+x = x(:)'; y = y(:)';
+
+r = crosscorr_seq(x, y);
+lags = -(length(y)-1):(length(x)-1);
+
+scf(1);
+plot2d3(lags, r);
+xtitle("Cross-correlation (stem plot)","Lag","r_{xy}(lag)");
+
+```
 
 ## CALCULATION
+![WhatsApp Image 2025-11-20 at 18 37 16_9b74d51e](https://github.com/user-attachments/assets/c34b8550-e272-4947-b23f-b3bb0e295263)
+
 
 ## OUTPUT
+<img width="563" height="351" alt="image" src="https://github.com/user-attachments/assets/1cc0721d-f97c-4b3b-945a-a41eb6035bde" />
+<img width="475" height="363" alt="image" src="https://github.com/user-attachments/assets/f1e1f076-3591-4564-bf43-07069c620b3d" />
+
+
 
 ## RESULT
+Thus, the Mean,Variance and Cross-correlation are executed in scilab and output is verified.
